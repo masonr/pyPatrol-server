@@ -168,11 +168,11 @@ def orchestrate(data, workers):
     db_pass = config['database']['password']
 
     # populate SMTP settings
-    global smtp_server, smtp_port, smtp_user, smtp_password
+    global smtp_server, smtp_port, smtp_user, smtp_pass
     smtp_server = config['mail']['smtp_server']
     smtp_port = int(config['mail']['smtp_port'])
     smtp_user = config['mail']['smtp_user']
-    smtp_password = config['mail']['smtp_password']
+    smtp_pass = config['mail']['smtp_password']
 
     conn = None
     service_id = None
