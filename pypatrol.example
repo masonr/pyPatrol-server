@@ -3,10 +3,10 @@ db_poll_interval = 5
 http_timeout = 20
 
 [workers]
-secrets = ["gigabyte", "waffle"]
-endpoint_port = 6667
+secrets = ["secret1", "secret2"]
+endpoint_port = 12346
 dispatcher_host = 127.0.0.1
-dispatcher_port = 6668
+dispatcher_port = 12347
 inactivity_interval = 30
 
 [database]
@@ -17,7 +17,7 @@ user = pypatrol
 password = onaroll
 
 [mail]
-smtp_server = london.mxroute.com
+smtp_server = smtp.server.com
 smtp_port = 465
-smtp_user = notify@rowe.sh
-smtp_password = thegraywolfisold
+smtp_user = notifier@domain.com
+smtp_password = some_long_copy_paste_password

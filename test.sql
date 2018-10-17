@@ -65,8 +65,8 @@ INSERT INTO ip_port_service (service_id, ip_host, port)
 VALUES
   (1, '8.8.8.8', NULL),
   (2, '2001:4860:4860::8888', NULL),
-  (4, '8.8.8.8', 53),
-  (5, '74.91.113.28', 27003);
+  (5, '8.8.8.8', 53),
+  (6, '74.91.113.28', 27003);
 
 -- Table: service
 CREATE TABLE service (

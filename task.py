@@ -2,7 +2,7 @@
 # Author: Mason Rowe <mason@rowe.sh>
 # Project: pyPatrol-server
 # License: WTFPL <http://www.wtfpl.net/>
-# Last Updated: 15 Oct 2018
+# Last Updated: 17 Oct 2018
 #
 # Purpose: Dispatches a single service check to three pyPatrol-node workers and checks
 #          the results for a status change. If a status change has occured, notify the
@@ -14,6 +14,10 @@ import psycopg2, threading, requests, json, smtplib, configparser
 
 # initialize config parser
 config = None
+
+# initialize tasks parameters
+db_poll_interval = 0
+http_timeout = 0
 
 # initialize database parameters
 db_host = ""
@@ -125,9 +129,8 @@ def check_for_status_change(service, results):
 #   Returns: (none)
 def execute_task(data, worker_uri, results, index):
     headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
-    timeout_interval = int(config['tasks']['http_timeout'])
     try:
-        r = requests.post(worker_uri, data=json.dumps(data), headers=headers, timeout=timeout_interval)
+        r = requests.post(worker_uri, data=json.dumps(data), headers=headers, timeout=http_timeout)
         results[index] = json.loads(r.text)
     except requests.exceptions.RequestException as e:
         print(e)
@@ -150,6 +153,11 @@ def orchestrate(data, workers):
     global config
     config = configparser.ConfigParser()
     config.read('pypatrol.conf')
+
+    # populate tasks settings
+    global db_poll_interval, http_timeout
+    db_poll_interval = int(config['tasks']['db_poll_interval'])
+    http_timeout = int(config['tasks']['http_timeout'])
 
     # populate PSQL settings
     global db_host, db_port, db_database, db_user, db_pass
