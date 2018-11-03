@@ -12,7 +12,7 @@
 from twisted.internet.protocol import Protocol, Factory
 from twisted.internet import reactor
 from datetime import datetime
-import json, random, threading, time, zmq, configparser
+import json, random, threading, time, zmq, configparser, requests
 
 workers = []
 secrets = [] # secret key(s) that a worker must present to the server
@@ -46,11 +46,22 @@ def add_worker(data):
             w.last_contact = datetime.now()
             workers_lock.release()
             return
-    # create a new Worker object and load in data
-    worker = Worker(data)
-    # add the worker to the active workers array
-    workers.append(worker)
-    print("worker_mgr.py: add_worker - added worker: " + str(worker.name))
+    headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
+    worker_uri = "http://" + str(data['ip']) + ":" + str(data['port']) + "/status"
+    try:
+        # check if worker is responding properly, reject if pyPatrol node service is unreachable
+        r = requests.get(worker_uri, headers=headers, timeout=5)
+        response = json.loads(r.text)
+        if (response['status'] == "online"):
+            # create a new Worker object and load in data
+            worker = Worker(data)
+            # add the worker to the active workers array
+            workers.append(worker)
+            print("worker_mgr.py: add_worker - added worker: " + str(worker.name))
+        else:
+            print("worker_mgr.py: add_worker - worker " + data['name'] + " status not 'online', rejecting worker.")
+    except requests.exceptions.RequestException as e:
+        print("worker_mgr.py: add_worker - Error contacting node " + data['name'] + ", rejecting as worker.")
     workers_lock.release() # release lock on active workers array
 
 # check_workers()
